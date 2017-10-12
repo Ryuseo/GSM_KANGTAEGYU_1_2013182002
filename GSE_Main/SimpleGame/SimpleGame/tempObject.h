@@ -18,6 +18,7 @@ class Rect
 {
 public:
     Rect(float x, float y, float z, float s, float r, float g, float b, float a);
+    Rect();
     ~Rect();
     void update();
 

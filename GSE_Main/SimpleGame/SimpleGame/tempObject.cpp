@@ -13,11 +13,11 @@ tempObject::~tempObject()
 }
 
 
-Rect::Rect(float x, float y, float z, float s, float r, float g, float b, float a)
+Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a)
 {
-    x = x;
-    y = y;
-    z = z;
+    x = px;
+    y = py;
+    z = pz;
     size = s;
     red = r;
     green = g;
@@ -26,6 +26,11 @@ Rect::Rect(float x, float y, float z, float s, float r, float g, float b, float 
     vectorX = 0.1;
     vectorY = 0.1;
     vectorZ = 0;
+}
+
+Rect::Rect()
+{
+
 }
 
 Rect::~Rect()

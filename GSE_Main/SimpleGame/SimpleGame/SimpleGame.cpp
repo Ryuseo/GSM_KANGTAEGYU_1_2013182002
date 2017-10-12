@@ -10,18 +10,30 @@ but WITHOUT ANY WARRANTY.
 
 #include "stdafx.h"
 #include <iostream>
+#include <random>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
 #include "Renderer.h"
 #include "tempObject.h"
 
+#define RectSize 96
+
 using namespace std;
 
+
 Renderer *g_Renderer = NULL;
-Rect rect{ 0, 0, 0, 4, 1, 0, 1, 1 };
+Rect *rect = new Rect[RectSize];
+int rectNum = 0;
 
-
+// 내 함수
+void click(float x, float y);
+void drag(float x, float y);
+void renderFunc();
+void update();
+int getRandomNumber(int min, int max);
+float getRandomfloat(float min, float max);
+void insertRect(float x, float y);
 
 void RenderScene(void)
 {
@@ -29,10 +41,10 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->DrawSolidRect(rect);
     //g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 
-    rect.update();
+    renderFunc();
+    update();
 
 	glutSwapBuffers();
 }
@@ -44,23 +56,23 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
-    static float downPos[2];
+    static float downPos[2];    //0은 x, 1은 y
     static bool clickBool = false;;
-    if (button  == 0x0000 && state == 0x0000)
+    if (button  == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
         downPos[0] = x;
         downPos[1] = y;
         clickBool = true;
     }
-    else if (button == 0x0000 && state == 0x0001)
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
     {
         if ((-1 < downPos[0] - x && downPos[0] - x < 1) && (-1 < downPos[1] - y && downPos[1] - y < 1))
         {
-            cout << "click"<< endl;
+            click(downPos[0], downPos[1]);
         }
         else
         {
-            cout << "drag" << endl;
+            drag(x, y);
         }
         clickBool = false;
     }
@@ -116,3 +128,71 @@ int main(int argc, char **argv)
     return 0;
 }
 
+void renderFunc()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        g_Renderer->DrawSolidRect(rect[i]);
+    }
+}
+
+void update()
+{
+    for (int i = 0; i < 100; ++i)
+    {
+        rect[i].update();
+    }
+}
+
+void click(float x, float y)
+{
+    cout << "click" << endl;
+    insertRect(x, y);
+}
+
+void drag(float x, float y)
+{
+    cout << "drag" << endl;
+    insertRect(x, y);
+}
+
+int getRandomNumber(int min, int max)
+{
+    //< 1단계. 시드 설정
+    random_device rn;
+    default_random_engine rnd(rn());
+
+    //< 2단계. 분포 설정 ( 정수 )
+    uniform_int_distribution<int> range(min, max);
+
+    //< 3단계. 값 추출
+    return range(rnd);
+}
+
+float getRandomfloat(float min, float max)
+{
+    //< 1단계. 시드 설정
+    random_device rn;
+    default_random_engine rnd(rn());
+
+    //< 2단계. 분포 설정 ( 정수 )
+    uniform_real_distribution<float> range(min, max);
+
+    //< 3단계. 값 추출
+    return range(rnd);
+}
+
+void insertRect(float x, float y)
+{
+    rect[rectNum] = { x - 250, 500 - y - 250, 0, getRandomfloat(10,100), getRandomfloat(0.0,1.0), getRandomfloat(0.0,1.0), getRandomfloat(0.0,1.0), 1.0 };
+    rect[rectNum].vectorX = getRandomfloat(-0.1, 0.1);
+    rect[rectNum].vectorY = getRandomfloat(-0.1, 0.1);
+    if (rectNum >= RectSize)
+    {
+        rectNum = 0;
+    }
+    else
+    {
+        rectNum++;
+    }
+}

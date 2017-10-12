@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Dependencies\glew.h"
+#include "tempObject.h"
 
 class Renderer
 {
@@ -15,6 +16,7 @@ public:
 
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
+    void DrawSolidRect(Rect rect);
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);

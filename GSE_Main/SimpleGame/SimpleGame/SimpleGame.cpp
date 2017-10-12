@@ -14,8 +14,14 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\freeglut.h"
 
 #include "Renderer.h"
+#include "tempObject.h"
+
+using namespace std;
 
 Renderer *g_Renderer = NULL;
+Rect rect{ 0, 0, 0, 4, 1, 0, 1, 1 };
+
+
 
 void RenderScene(void)
 {
@@ -23,7 +29,10 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+	g_Renderer->DrawSolidRect(rect);
+    //g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+
+    rect.update();
 
 	glutSwapBuffers();
 }
@@ -35,6 +44,26 @@ void Idle(void)
 
 void MouseInput(int button, int state, int x, int y)
 {
+    static float downPos[2];
+    static bool clickBool = false;;
+    if (button  == 0x0000 && state == 0x0000)
+    {
+        downPos[0] = x;
+        downPos[1] = y;
+        clickBool = true;
+    }
+    else if (button == 0x0000 && state == 0x0001)
+    {
+        if ((-1 < downPos[0] - x && downPos[0] - x < 1) && (-1 < downPos[1] - y && downPos[1] - y < 1))
+        {
+            cout << "click"<< endl;
+        }
+        else
+        {
+            cout << "drag" << endl;
+        }
+        clickBool = false;
+    }
 	RenderScene();
 }
 

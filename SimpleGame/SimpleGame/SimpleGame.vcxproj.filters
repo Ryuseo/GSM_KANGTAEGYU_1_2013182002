@@ -16,6 +16,12 @@
     <Filter Include="소스 파일\Shaders">
       <UniqueIdentifier>{aa86e47f-445f-4440-9a76-173363b46c4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Object">
+      <UniqueIdentifier>{168619da-6ee1-4493-9854-a36892b9e605}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{ffdcbe6e-1041-4f65-b524-97ebf206a30d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -31,7 +37,10 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="tempObject.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Object</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneMgr.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +54,10 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="tempObject.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>Object</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneMgr.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

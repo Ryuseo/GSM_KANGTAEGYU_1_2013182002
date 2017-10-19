@@ -64,9 +64,9 @@ void MouseInput(int button, int state, int x, int y)
         downPos[1] = y;
         clickBool = true;
     }
-    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+    else if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)    //(button == GLUT_LEFT_BUTTON && state == GLUT_UP
     {
-        if ((-1 < downPos[0] - x && downPos[0] - x < 1) && (-1 < downPos[1] - y && downPos[1] - y < 1))
+        if (isClick(downPos[0] - x, downPos[1] - y))    //((-1 < x && x < 1) && (-1 < y && y < 1))
         {
             click(downPos[0], downPos[1]);
         }
@@ -142,6 +142,23 @@ void update()
     {
         rect[i].update();
     }
+}
+
+bool leftMouseButtonUp(int button, int state)
+{
+    if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+    {
+        return true;
+    }
+}
+
+bool isClick(float x, float y)
+{
+    if ((-1 < x && x < 1) && (-1 < y && y < 1))
+    {
+        return true;
+    }
+    return false;
 }
 
 void click(float x, float y)

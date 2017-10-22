@@ -36,11 +36,11 @@
     <ClInclude Include="Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="tempObject.h">
-      <Filter>Object</Filter>
-    </ClInclude>
     <ClInclude Include="SceneMgr.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Rect.h">
+      <Filter>Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,11 +53,11 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="tempObject.cpp">
-      <Filter>Object</Filter>
-    </ClCompile>
     <ClCompile Include="SceneMgr.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Rect.cpp">
+      <Filter>Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

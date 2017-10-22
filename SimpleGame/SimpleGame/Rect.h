@@ -6,26 +6,14 @@
 #include <Windows.h>
 
 #include "Dependencies\glew.h"
-class tempObject
-{
-public:
-    tempObject();
-    ~tempObject();
-
-};
-
 class Rect
 {
 private:
     bool bounceH();
     bool bounceV();
+    void changeColor(float r, float g, float b);
 
 public:
-    Rect(float x, float y, float z, float s, float r, float g, float b, float a);
-    Rect();
-    ~Rect();
-    void update();
-
     float x;
     float y;
     float z;
@@ -37,4 +25,9 @@ public:
     float vectorX;
     float vectorY;
     float vectorZ;
+
+    Rect(float x, float y, float z, float s, float r, float g, float b, float a, float vx, float vy, float vz);
+    Rect();
+    ~Rect();
+    void update();
 };

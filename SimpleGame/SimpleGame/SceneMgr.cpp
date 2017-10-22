@@ -1,20 +1,22 @@
-#include <iostream>
-#include <random>
 #include "stdafx.h"
-#include "Dependencies\glew.h"
-#include "Dependencies\freeglut.h"
-
 #include "SceneMgr.h"
-#include "Renderer.h"
-#include "tempObject.h"
 
 #define RectSize 50
 
 using namespace std;
 
-SceneMgr::SceneMgr(int inputargc, char **inputargv)
+SceneMgr::SceneMgr()
 {
-    Rect *rect = new Rect[RectSize];
+    rect = new Rect[RectSize];
+    for (int i = 0; i < RectSize; ++i)
+    {
+        rect[i] = { getRandomfloat(-100,100), getRandomfloat(-100,100), 0, 10, 1, 1, 1, 1.0 ,getRandomfloat(-0.1, 0.1) ,getRandomfloat(-0.1, 0.1) ,0};
+    }
+}
+
+SceneMgr::~SceneMgr()
+{
+
 }
 
 void SceneMgr::Update()
@@ -37,9 +39,7 @@ void SceneMgr::Click(float x, float y)
 
 void SceneMgr::insertRect(float x, float y)
 {
-    rect[rectNum] = { x - 250, 500 - y - 250, 0, getRandomfloat(10,100), getRandomfloat(0.0,1.0), getRandomfloat(0.0,1.0), getRandomfloat(0.0,1.0), 1.0 };
-    rect[rectNum].vectorX = getRandomfloat(-0.1, 0.1);
-    rect[rectNum].vectorY = getRandomfloat(-0.1, 0.1);
+    rect[rectNum] = { x - 250, 500 - y - 250, 0, 1, 1, 1, 1, 1.0 ,getRandomfloat(-0.1, 0.1) ,getRandomfloat(-0.1, 0.1) ,0 };
     if (rectNum >= RectSize)
     {
         rectNum = 0;

@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "Dependencies\glew.h"
-#include "tempObject.h"
+#include "Rect.h"
 
 class Renderer
 {

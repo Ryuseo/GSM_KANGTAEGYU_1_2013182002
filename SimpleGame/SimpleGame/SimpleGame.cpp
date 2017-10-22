@@ -16,7 +16,6 @@ but WITHOUT ANY WARRANTY.
 
 #include "SceneMgr.h"
 #include "Renderer.h"
-#include "tempObject.h"
 
 #define RectSize 96
 
@@ -169,13 +168,13 @@ bool isClick(float x, float y)
 void click(float x, float y)
 {
     cout << "click" << endl;
-    scenemgr.Click(x, y);
+    //scenemgr.Click(x, y);
 }
 
 void drag(float x, float y)
 {
     cout << "drag" << endl;
-    scenemgr.Click(x, y);
+    //scenemgr.Click(x, y);
 }
 
 int getRandomNumber(int min, int max)

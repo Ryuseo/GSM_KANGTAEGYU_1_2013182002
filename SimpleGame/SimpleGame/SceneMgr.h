@@ -11,10 +11,9 @@
 class SceneMgr
 {
 private:
-    int     argc;
-    char    **argv;
     Rect    *rect;
     int     rectNum = 0;
+    float   pTime;
 
     void    insertRect(float x, float y);
     int     getRandomNumber(int min, int max);
@@ -26,5 +25,7 @@ public:
     void    Update();
     Rect    RenderObject(int i);
     void    Click(float x, float y);
+    void    CollisionTest();
+    float   distCalculate(Rect& a, Rect& b);
 };
 

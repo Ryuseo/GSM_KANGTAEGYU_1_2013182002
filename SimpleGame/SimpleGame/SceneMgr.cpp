@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 
-#define RectSize 50
+#define RectSize 10
 
 using namespace std;
 
@@ -10,8 +10,10 @@ SceneMgr::SceneMgr()
     rect = new Rect[RectSize];
     for (int i = 0; i < RectSize; ++i)
     {
-        rect[i] = { getRandomfloat(-100,100), getRandomfloat(-100,100), 0, 10, 1, 1, 1, 1.0 ,getRandomfloat(-0.1, 0.1) ,getRandomfloat(-0.1, 0.1) ,0};
+        rect[i] = { getRandomfloat(-100,100), getRandomfloat(-100,100), 0, 10, 1, 1, 1, 1.0 ,getRandomfloat(-10.0, 10.0) ,getRandomfloat(-10.0, 10.0) , 0, getRandomNumber(3, 5),getRandomfloat(10.0, 20.0)};
     }
+    pTime = timeGetTime();
+
 }
 
 SceneMgr::~SceneMgr()
@@ -21,10 +23,23 @@ SceneMgr::~SceneMgr()
 
 void SceneMgr::Update()
 {
-    for (int i  = 0; i < RectSize; ++i)
+    float nTime =  timeGetTime();
+    for (int i = 0; i < RectSize; ++i)
     {
-        rect[i].update();
+        if (rect[i].getLife() <= -1) { break; }
+
+        rect[i].update(nTime - pTime);
+        CollisionTest();
+        if (rect[i].getLife() <= 0)
+        {
+            rect[i].setLife();
+        }
+        else if (rect[i].getLifeTime() <= 0)
+        {
+            rect[i].setLife();
+        }
     }
+    pTime = nTime;
 }
 
 Rect SceneMgr::RenderObject(int i)
@@ -39,7 +54,7 @@ void SceneMgr::Click(float x, float y)
 
 void SceneMgr::insertRect(float x, float y)
 {
-    rect[rectNum] = { x - 250, 500 - y - 250, 0, 1, 1, 1, 1, 1.0 ,getRandomfloat(-0.1, 0.1) ,getRandomfloat(-0.1, 0.1) ,0 };
+    rect[rectNum] = { x - 250, 500 - y - 250, 0, 1, 1, 1, 1, 1.0 ,getRandomfloat(-10.0, 10.0) ,getRandomfloat(-10.0, 10.0) ,0 , getRandomNumber(3, 5),getRandomfloat(10.0, 20.0) };
     if (rectNum >= RectSize)
     {
         rectNum = 0;
@@ -74,4 +89,42 @@ float SceneMgr::getRandomfloat(float min, float max)
 
     //< 3단계. 값 추출
     return range(rnd);
+}
+
+void SceneMgr::CollisionTest()
+{
+    for (int i = 0; i < RectSize - 1; ++i)
+    {
+        for (int j = i; j < RectSize; j++)
+        {
+            if (rect[i].getX() + (rect[i].getSize() / 2) < rect[j].getX() - (rect[j].getSize()))
+            {
+                break;
+            }
+            else if (rect[i].getX() - (rect[i].getSize() / 2) > rect[j].getX() + (rect[j].getSize()))
+            {
+                break;
+            }
+            if (rect[i].getY() + (rect[i].getSize() / 2) < rect[j].getY() - (rect[j].getSize()))
+            {
+                break;
+            }
+            else if (rect[i].getY() - (rect[i].getSize() / 2) > rect[j].getY() + (rect[j].getSize()))
+            {
+                break;
+            }
+            rect[i].changeColor(1, 0, 0);
+            rect[j].changeColor(1, 0, 0);
+               //rect[i].changeColor(1, 1, 1);
+               //rect[j].changeColor(1, 1, 1);
+        }
+    }
+}
+
+float SceneMgr::distCalculate(Rect& a, Rect& b)
+{
+    float distX = a.getX() - b.getX();
+    float distY = a.getY() - b.getY();
+    
+    return sqrtf(distX) + sqrtf(distY);
 }

@@ -17,7 +17,7 @@ but WITHOUT ANY WARRANTY.
 #include "SceneMgr.h"
 #include "Renderer.h"
 
-#define RectSize 96
+#define RectSize 10
 
 using namespace std;
 
@@ -28,7 +28,6 @@ SceneMgr scenemgr;
 
 // ³» ÇÔ¼ö
 void renderFunc();
-void update();
 bool leftMouseButtonDown(int button, int state);
 bool leftMouseButtonUp(int button, int state);
 bool isClick(float x, float y);
@@ -132,7 +131,7 @@ int main(int argc, char **argv)
 
 void renderFunc()
 {
-    for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < RectSize; ++i)
     {
         g_Renderer->DrawSolidRect(scenemgr.RenderObject(i));
     }

@@ -186,13 +186,13 @@ void Renderer::DrawSolidRect(Rect rect)
 {
     float newX, newY;
 
-    GetGLPosition(rect.x, rect.y, &newX, &newY);
+    GetGLPosition(rect.getX(), rect.getY(), &newX, &newY);
 
     //Program select
     glUseProgram(m_SolidRectShader);
 
-    glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Trans"), newX, newY, 0, rect.size);
-    glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Color"), rect.red, rect.green, rect.blue, rect.alhpa);
+    glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Trans"), newX, newY, 0, rect.getSize());
+    glUniform4f(glGetUniformLocation(m_SolidRectShader, "u_Color"), rect.getRed(), rect.getGreen(), rect.getBlue(), rect.getAlhpa());
 
     int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
     glEnableVertexAttribArray(attribPosition);

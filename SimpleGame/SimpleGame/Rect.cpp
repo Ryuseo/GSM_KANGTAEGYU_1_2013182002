@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "Rect.h"
 
-Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz)
+#define WIDTH 250
+#define HEIGHT 250
+
+Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT)
 {
     x = px;
     y = py;
@@ -14,6 +17,8 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
     vectorX = vx;
     vectorY = vy;
     vectorZ = vz;
+    life = lifeNum;
+    lifeTime = lifeT;
 }
 
 Rect::Rect()
@@ -26,11 +31,13 @@ Rect::~Rect()
 
 }
 
-void Rect::update()
+void Rect::update(float time)
 {
-    x += vectorX;
-    y += vectorY;
-    z += vectorZ;
+    float elapsedTime = time / 1000;
+    x += vectorX * elapsedTime;
+    y += vectorY * elapsedTime;
+    z += vectorZ * elapsedTime;
+    lifeTime -= elapsedTime;
 
     if (bounceH())
     {
@@ -53,7 +60,7 @@ void Rect::update()
 
 bool Rect::bounceH()
 {
-    if (x > 250 || x < -250)
+    if (x > WIDTH || x < -WIDTH)
     {
         vectorX = -vectorX;
         return true;
@@ -63,7 +70,7 @@ bool Rect::bounceH()
 
 bool Rect::bounceV()
 {
-    if (y > 250 || y < -250)
+    if (y > HEIGHT || y < -HEIGHT)
     {
         vectorY = -vectorY;
         return true;

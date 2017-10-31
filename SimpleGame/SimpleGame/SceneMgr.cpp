@@ -93,30 +93,33 @@ float SceneMgr::getRandomfloat(float min, float max)
 
 void SceneMgr::CollisionTest()
 {
+	for (int i = 0; i < RectSize - 1; ++i)
+	{
+		rect[i].changeColor(1, 1, 1);
+	}
+
     for (int i = 0; i < RectSize - 1; ++i)
     {
-        for (int j = i; j < RectSize; j++)
+        for (int j = i + 1; j < RectSize; ++j)
         {
-            if (rect[i].getX() + (rect[i].getSize() / 2) < rect[j].getX() - (rect[j].getSize()))
+            if (rect[i].getX() + (rect[i].getSize() / 2) < rect[j].getX() - (rect[j].getSize() / 2))
             {
                 break;
             }
-            else if (rect[i].getX() - (rect[i].getSize() / 2) > rect[j].getX() + (rect[j].getSize()))
+            else if (rect[i].getX() - (rect[i].getSize() / 2) > rect[j].getX() + (rect[j].getSize() / 2))
             {
                 break;
             }
-            if (rect[i].getY() + (rect[i].getSize() / 2) < rect[j].getY() - (rect[j].getSize()))
+            if (rect[i].getY() + (rect[i].getSize() / 2) < rect[j].getY() - (rect[j].getSize() / 2))
             {
-                break;
+                break; 
             }
-            else if (rect[i].getY() - (rect[i].getSize() / 2) > rect[j].getY() + (rect[j].getSize()))
+            else if (rect[i].getY() - (rect[i].getSize() / 2) > rect[j].getY() + (rect[j].getSize() / 2))
             {
                 break;
             }
             rect[i].changeColor(1, 0, 0);
             rect[j].changeColor(1, 0, 0);
-               //rect[i].changeColor(1, 1, 1);
-               //rect[j].changeColor(1, 1, 1);
         }
     }
 }

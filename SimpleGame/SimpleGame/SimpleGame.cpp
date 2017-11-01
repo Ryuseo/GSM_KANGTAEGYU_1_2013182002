@@ -22,12 +22,10 @@ but WITHOUT ANY WARRANTY.
 using namespace std;
 
 
-Renderer *g_Renderer = NULL;
 
-SceneMgr scenemgr;
+SceneMgr* scenemgr = NULL;
 
 // ³» ÇÔ¼ö
-void renderFunc();
 bool leftMouseButtonDown(int button, int state);
 bool leftMouseButtonUp(int button, int state);
 bool isClick(float x, float y);
@@ -39,13 +37,13 @@ float getRandomfloat(float min, float max);
 void RenderScene(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Renderer Test
     //g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
 
-    scenemgr.Update();
-    renderFunc();
+    scenemgr->Update();
+	scenemgr->RenderObject();
 
 	glutSwapBuffers();
 }
@@ -110,11 +108,7 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+	scenemgr = new SceneMgr(500, 500);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -124,17 +118,9 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	delete g_Renderer;
+	delete scenemgr;
 
     return 0;
-}
-
-void renderFunc()
-{
-    for (int i = 0; i < RectSize; ++i)
-    {
-        g_Renderer->DrawSolidRect(scenemgr.RenderObject(i));
-    }
 }
 
 bool leftMouseButtonDown(int button, int state)
@@ -167,13 +153,13 @@ bool isClick(float x, float y)
 void click(float x, float y)
 {
     cout << "click" << endl;
-    //scenemgr.Click(x, y);
+    scenemgr->Click(x, y);
 }
 
 void drag(float x, float y)
 {
     cout << "drag" << endl;
-    //scenemgr.Click(x, y);
+    scenemgr->Click(x, y);
 }
 
 int getRandomNumber(int min, int max)

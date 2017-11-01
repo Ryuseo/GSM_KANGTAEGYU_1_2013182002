@@ -44,7 +44,7 @@ public:
     float   getVectorZ  ()                          { return vectorZ; }
     int     getLife     ()                          { return life; }
     float   getLifeTime ()                          { return lifeTime; }
-    void    setLife     ()                          { life = -1, lifeTime = -1; }
+    void    setLife     ()                          { life--; }
     void    update      (float time);
     void    changeColor (float r, float g, float b);
 };

@@ -1,19 +1,26 @@
 #include "stdafx.h"
 #include "SceneMgr.h"
 
-#define RectSize 10
-
 using namespace std;
 
-SceneMgr::SceneMgr()
+SceneMgr::SceneMgr(int width, int height)
 {
-    rect = new Rect[RectSize];
-    for (int i = 0; i < RectSize; ++i)
-    {
-        rect[i] = { getRandomfloat(-100,100), getRandomfloat(-100,100), 0, 10, 1, 1, 1, 1.0 ,getRandomfloat(-10.0, 10.0) ,getRandomfloat(-10.0, 10.0) , 0, getRandomNumber(3, 5),getRandomfloat(10.0, 20.0)};
-    }
+	m_renderer = new Renderer(width, height);
+
+	if (!m_renderer->IsInitialized())
+	{
+		std::cout << "SceneMgr::Renderer could not be initialized.. \n";
+	}
+
+	m_windowWidth = width;
+	m_windowHeight = height;
+
     pTime = timeGetTime();
 
+	for (int i = 0; i < RectSize; ++i )
+	{
+		rect[i] = NULL;
+	}
 }
 
 SceneMgr::~SceneMgr()
@@ -26,25 +33,40 @@ void SceneMgr::Update()
     float nTime =  timeGetTime();
     for (int i = 0; i < RectSize; ++i)
     {
-        if (rect[i].getLife() <= -1) { break; }
+		if (rect[i] != NULL)
+		{
+			if (rect[i]->getLife() <= -1) { break; }
 
-        rect[i].update(nTime - pTime);
-        CollisionTest();
-        if (rect[i].getLife() <= 0)
-        {
-            rect[i].setLife();
-        }
-        else if (rect[i].getLifeTime() <= 0)
-        {
-            rect[i].setLife();
-        }
+			rect[i]->update(nTime - pTime);
+			CollisionTest();
+			if (rect[i]->getLife() <= 0 || rect[i]->getLifeTime() <= 0)
+			{
+				rect[i] = NULL;
+			}
+		}
     }
     pTime = nTime;
 }
 
-Rect SceneMgr::RenderObject(int i)
+void SceneMgr::RenderObject()
 {
-    return rect[i];
+	for (int i = 0; i < RectSize; i++)
+	{
+		if (rect[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawSolidRect(
+				rect[i]->getX(),
+				rect[i]->getY(),
+				0,
+				rect[i]->getSize(),
+				rect[i]->getRed(),
+				rect[i]->getBlue(),
+				rect[i]->getGreen(),
+				rect[i]->getAlhpa()
+			);
+		}
+	}
 }
 
 void SceneMgr::Click(float x, float y)
@@ -54,15 +76,14 @@ void SceneMgr::Click(float x, float y)
 
 void SceneMgr::insertRect(float x, float y)
 {
-    rect[rectNum] = { x - 250, 500 - y - 250, 0, 1, 1, 1, 1, 1.0 ,getRandomfloat(-10.0, 10.0) ,getRandomfloat(-10.0, 10.0) ,0 , getRandomNumber(3, 5),getRandomfloat(10.0, 20.0) };
-    if (rectNum >= RectSize)
-    {
-        rectNum = 0;
-    }
-    else
-    {
-        rectNum++;
-    }
+	for (int i = 0; i < RectSize; ++i)
+	{
+		if (rect[i] == NULL)
+		{
+			rect[i] = new Rect(x - 250, 250 - y, 0, 10, 1, 1, 1, 1.0, getRandomfloat(-10.0, 10.0), getRandomfloat(-10.0, 10.0), 0, getRandomNumber(3, 5), getRandomfloat(10.0, 20.0));
+			break;
+		}
+	}
 }
 
 int SceneMgr::getRandomNumber(int min, int max)
@@ -95,31 +116,41 @@ void SceneMgr::CollisionTest()
 {
 	for (int i = 0; i < RectSize - 1; ++i)
 	{
-		rect[i].changeColor(1, 1, 1);
+		if (rect[i] != NULL)
+		{
+			rect[i]->changeColor(1, 1, 1);
+		}
 	}
 
-    for (int i = 0; i < RectSize - 1; ++i)
+    for (int i = 0; i < RectSize; ++i)
     {
-        for (int j = i + 1; j < RectSize; ++j)
-        {
-            if (rect[i].getX() + (rect[i].getSize() / 2) < rect[j].getX() - (rect[j].getSize() / 2))
-            {
-                break;
-            }
-            else if (rect[i].getX() - (rect[i].getSize() / 2) > rect[j].getX() + (rect[j].getSize() / 2))
-            {
-                break;
-            }
-            if (rect[i].getY() + (rect[i].getSize() / 2) < rect[j].getY() - (rect[j].getSize() / 2))
-            {
-                break; 
-            }
-            else if (rect[i].getY() - (rect[i].getSize() / 2) > rect[j].getY() + (rect[j].getSize() / 2))
-            {
-                break;
-            }
-            rect[i].changeColor(1, 0, 0);
-            rect[j].changeColor(1, 0, 0);
+		if(rect[i] != NULL)
+		{
+			for (int j = 0; j < RectSize; ++j)
+			{
+				if (rect[j] != NULL && rect[i] != rect[j])
+				{
+					if (rect[i]->getX() + (rect[i]->getSize() / 2) < rect[j]->getX() - (rect[j]->getSize() / 2))
+					{
+						break;
+					}
+					else if (rect[i]->getX() - (rect[i]->getSize() / 2) > rect[j]->getX() + (rect[j]->getSize() / 2))
+					{
+						break;
+					}
+					if (rect[i]->getY() + (rect[i]->getSize() / 2) < rect[j]->getY() - (rect[j]->getSize() / 2))
+					{
+						break;
+					}
+					else if (rect[i]->getY() - (rect[i]->getSize() / 2) > rect[j]->getY() + (rect[j]->getSize() / 2))
+					{
+						break;
+					}
+					rect[i]->changeColor(1, 0, 0);
+					rect[j]->changeColor(1, 0, 0);
+					rect[i]->setLife();
+				}
+			}
         }
     }
 }

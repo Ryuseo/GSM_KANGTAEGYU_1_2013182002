@@ -1,17 +1,23 @@
 #pragma once
 #include <iostream>
 #include <random>
+#include <cstdlib>
 #include "stdafx.h"
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
-#include "SceneMgr.h"
 #include "Renderer.h"
 #include "Rect.h"
+
+#define RectSize 10
 class SceneMgr
 {
 private:
-    Rect    *rect;
+    Rect    *rect[RectSize];
+	Renderer *m_renderer;
+
+	int m_windowWidth;
+	int m_windowHeight;
     int     rectNum = 0;
     float   pTime;
 
@@ -20,10 +26,10 @@ private:
     float   getRandomfloat(float min, float max);
 
 public:
-    SceneMgr();
+    SceneMgr(int width, int height);
     ~SceneMgr();
     void    Update();
-    Rect    RenderObject(int i);
+    void    RenderObject();
     void    Click(float x, float y);
     void    CollisionTest();
     float   distCalculate(Rect& a, Rect& b);

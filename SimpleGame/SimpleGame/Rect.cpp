@@ -4,7 +4,7 @@
 #define WIDTH 250
 #define HEIGHT 250
 
-Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT)
+Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType)
 {
     x = px;
     y = py;
@@ -19,6 +19,7 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
     vectorZ = vz;
     life = lifeNum;
     lifeTime = lifeT;
+	type = inputType;
 }
 
 Rect::Rect()
@@ -36,43 +37,45 @@ void Rect::update(float time)
     float elapsedTime = time / 1000;
     x += vectorX * elapsedTime;
     y += vectorY * elapsedTime;
-    z += vectorZ * elapsedTime;
+    //z += vectorZ * elapsedTime;
     lifeTime -= elapsedTime;
 
-    if (bounceH())
+    if (bounceH(elapsedTime))
     {
-        changeColor(1,0,0);
+        //changeColor(1,0,0);
     }
     else
     {
-        changeColor(1, 1, 1);
+        //changeColor(1, 1, 1);
     }
 
-    if (bounceV())
+    if (bounceV(elapsedTime))
     {
-        changeColor(1, 0, 0);
+        //changeColor(1, 0, 0);
     }
     else
     {
-        changeColor(1, 1, 1);
+        //changeColor(1, 1, 1);
     }
 }
 
-bool Rect::bounceH()
+bool Rect::bounceH(float time)
 {
     if (x > WIDTH || x < -WIDTH)
     {
         vectorX = -vectorX;
+		x += vectorX * time;
         return true;
     }
     return false;
 }
 
-bool Rect::bounceV()
+bool Rect::bounceV(float time)
 {
     if (y > HEIGHT || y < -HEIGHT)
     {
         vectorY = -vectorY;
+		y += vectorY * time;
         return true;
     }
     return false;

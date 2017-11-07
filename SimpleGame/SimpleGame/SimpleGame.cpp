@@ -17,8 +17,6 @@ but WITHOUT ANY WARRANTY.
 #include "SceneMgr.h"
 #include "Renderer.h"
 
-#define RectSize 10
-
 using namespace std;
 
 

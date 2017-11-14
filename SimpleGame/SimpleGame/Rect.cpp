@@ -20,6 +20,8 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
     life = lifeNum;
     lifeTime = lifeT;
 	type = inputType;
+	coolTime = 0;
+	mom = NULL;
 }
 
 Rect::Rect()
@@ -39,6 +41,7 @@ void Rect::update(float time)
     y += vectorY * elapsedTime;
     //z += vectorZ * elapsedTime;
     lifeTime -= elapsedTime;
+	coolTime += elapsedTime;
 
     if (bounceH(elapsedTime))
     {

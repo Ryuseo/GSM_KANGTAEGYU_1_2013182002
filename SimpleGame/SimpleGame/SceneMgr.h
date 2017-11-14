@@ -12,10 +12,12 @@
 class SceneMgr
 {
 private:
-    Rect    *rect[RECTSIZE];
-	Rect	*bullet[BULLETSIZE];
-	Rect	*building;
-	Renderer *m_renderer;
+    Rect		*rect[RECTSIZE];
+	Rect		*bullet[BULLETSIZE];
+	Rect		*arrow[ARROWSIZE];
+	Rect		*building;
+	Renderer	*m_renderer;
+	GLuint		buildingTex;
 
 	int m_windowWidth;
 	int m_windowHeight;

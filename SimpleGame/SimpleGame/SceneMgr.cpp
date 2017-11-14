@@ -35,7 +35,12 @@ SceneMgr::SceneMgr(int width, int height)
 	{
 		bullet[i] = NULL;
 	}
+	for (int i = 0; i < ARROWSIZE; ++i)
+	{
+		arrow[i] = NULL;
+	}
 
+	buildingTex = m_renderer->CreatePngTexture("./Resouce/buildingTex.png");
 	building = new Rect(0, 0, 0, 50, 1, 1, 0, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING);
 
     pTime = timeGetTime();
@@ -75,6 +80,28 @@ void SceneMgr::Update()
 		}
 	}
 
+	for (int i = 0; i < ARROWSIZE; ++i)
+	{
+		if (arrow[i] != NULL && building != NULL)
+		{
+			CollisionTest(*building, *arrow[i]);
+		}
+	}
+
+	for (int i = 0; i < RECTSIZE; ++i)
+	{
+		if (rect[i] != NULL)
+		{
+			for (int j = 0; j < ARROWSIZE; ++j)
+			{
+				if (arrow[j] != NULL)
+				{
+					CollisionTest(*rect[i], *arrow[j]);
+				}
+			}
+		}
+	}
+
 	// 업데이트
 	if (building != NULL)
 	{
@@ -90,6 +117,32 @@ void SceneMgr::Update()
 		if (rect[i] != NULL)
 		{
 			rect[i]->update(nTime - pTime);
+			if(rect[i]->getCoolTime() >= 0.5)
+			{
+				for (int j = 0; j < ARROWSIZE; ++j)
+				{
+					if (arrow[j] == NULL)
+					{
+						float temp = getRandomNumber(1, 2);
+						if (temp == 2)
+						{
+							temp = -1;
+						}
+						float vectorX = getRandomfloat(0.0, 6000.0);
+						float vectorY = sqrt(6000.0 - vectorX) * temp;
+						temp = getRandomNumber(1, 2);
+						if (temp == 2)
+						{
+							temp = -1;
+						}
+						vectorX = sqrt(vectorX) * temp;
+						arrow[j] = new Rect(rect[i]->getX(), rect[i]->getY(), 0, 2, 0, 1, 0, 1.0, vectorX, vectorY, 0, 20, 100000, OBJECT_ARROW);
+						rect[i]->resetCoolTime();
+						arrow[j]->setMom(rect[i]);
+						break;
+					}
+				}
+			}
 			if (rect[i]->getLife() <= 0 || rect[i]->getLifeTime() <= 0)
 			{
 				rect[i] = NULL;
@@ -105,6 +158,18 @@ void SceneMgr::Update()
 			if (bullet[i]->getLife() <= 0 || bullet[i]->getLifeTime() <= 0)
 			{
 				bullet[i] = NULL;
+			}
+		}
+	}
+
+	for (int i = 0; i < ARROWSIZE; ++i)
+	{
+		if (arrow[i] != NULL)
+		{
+			arrow[i]->update(nTime - pTime);
+			if (arrow[i]->getLife() <= 0 || arrow[i]->getLifeTime() <= 0)
+			{
+				arrow[i] = NULL;
 			}
 		}
 	}
@@ -176,9 +241,27 @@ void SceneMgr::RenderObject()
 		}
 	}
 
+	for (int i = 0; i < ARROWSIZE; i++)
+	{
+		if (arrow[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawSolidRect(
+				arrow[i]->getX(),
+				arrow[i]->getY(),
+				0,
+				arrow[i]->getSize(),
+				arrow[i]->getRed(),
+				arrow[i]->getGreen(),
+				arrow[i]->getBlue(),
+				arrow[i]->getAlhpa()
+			);
+		}
+	}
+
 	if (building != NULL)
 	{
-		m_renderer->DrawSolidRect(
+		m_renderer->DrawTexturedRect(
 			building->getX(),
 			building->getY(),
 			0,
@@ -186,7 +269,8 @@ void SceneMgr::RenderObject()
 			building->getRed(),
 			building->getGreen(),
 			building->getBlue(),
-			building->getAlhpa()
+			building->getAlhpa(),
+			buildingTex
 		);
 	}
 }
@@ -281,6 +365,17 @@ void SceneMgr::CollisionTest(Rect& a, Rect& b)
 		}
 		else if (a.getType() == OBJECT_CHARACTER && b.getType() == OBJECT_BULLET)
 		{
+			a.setLife(b.getLife());
+			b.setLife(b.getLife());
+		}
+		else if (a.getType() == OBJECT_BUILDING && b.getType() == OBJECT_ARROW)
+		{
+			a.setLife(b.getLife());
+			b.setLife(b.getLife());
+		}
+		else if (a.getType() == OBJECT_CHARACTER && b.getType() == OBJECT_ARROW)
+		{
+			if (b.getMom() == &a) { return; }
 			a.setLife(b.getLife());
 			b.setLife(b.getLife());
 		}

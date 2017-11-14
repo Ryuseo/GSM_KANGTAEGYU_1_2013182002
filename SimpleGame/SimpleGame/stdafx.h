@@ -8,3 +8,4 @@
 
 #define RECTSIZE 10
 #define BULLETSIZE 100
+#define ARROWSIZE 100

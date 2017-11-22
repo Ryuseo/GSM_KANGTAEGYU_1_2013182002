@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(WINWIDE, WINHIGHT);
 	glutCreateWindow("Game Software Engineering KPU");
 
 	glewInit();
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 	}
 
 	// Initialize Renderer
-	scenemgr = new SceneMgr(500, 500);
+	scenemgr = new SceneMgr(WINWIDE, WINHIGHT);
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -150,13 +150,11 @@ bool isClick(float x, float y)
 
 void click(float x, float y)
 {
-    cout << "click" << endl;
     scenemgr->Click(x, y);
 }
 
 void drag(float x, float y)
 {
-    cout << "drag" << endl;
     scenemgr->Click(x, y);
 }
 

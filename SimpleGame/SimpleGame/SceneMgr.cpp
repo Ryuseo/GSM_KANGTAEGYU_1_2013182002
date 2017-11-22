@@ -14,34 +14,40 @@ enum OBJECT_TYPE
 	OBJECT_ARROW,
 };
 
-
 SceneMgr::SceneMgr(int width, int height)
 {
 	m_renderer = new Renderer(width, height);
+	temptime = timeGetTime();
 
 	if (!m_renderer->IsInitialized())
 	{
 		std::cout << "SceneMgr::Renderer could not be initialized.. \n";
 	}
 
-	m_windowWidth = width;
-	m_windowHeight = height;
+	for (int i = 0; i < BUILDSIZE; ++i)
+	{
+		red_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, 300, 0, 100, 1, 0, 0, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 1);
+		blue_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, -300, 0, 100, 0, 0, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 2);
+	}
 
 	for (int i = 0; i < RECTSIZE; ++i )
 	{
-		rect[i] = NULL;
+		red_Char[i] = NULL;
+		blue_Char[i] = NULL;
 	}
 	for (int i = 0; i < BULLETSIZE; ++i)
 	{
-		bullet[i] = NULL;
+		red_Bullet[i] = NULL;
+		blue_Bullet[i] = NULL;
 	}
 	for (int i = 0; i < ARROWSIZE; ++i)
 	{
-		arrow[i] = NULL;
+		red_Arrow[i] = NULL;
+		blue_Arrow[i] = NULL;
 	}
 
-	buildingTex = m_renderer->CreatePngTexture("./Resouce/buildingTex.png");
-	building = new Rect(0, 0, 0, 50, 1, 1, 0, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING);
+	buildingTex[0] = m_renderer->CreatePngTexture("./Resouce/redBuildingTex.png");
+	buildingTex[1] = m_renderer->CreatePngTexture("./Resouce/blueBuildingTex.png");
 
     pTime = timeGetTime();
 }
@@ -58,257 +64,420 @@ void SceneMgr::Update()
     float nTime =  timeGetTime();
 
 	// 충돌
-	for (int i = 0; i < RECTSIZE; ++i)
+	for (int i = 0; i < BUILDSIZE; ++i)	//캐릭터 - 건물 
 	{
-		if (rect[i] != NULL && building != NULL)
+		if (red_building[i] != NULL)
 		{
-			CollisionTest(*building, *rect[i]);
-		}
-	}
-
-	for (int i = 0; i < RECTSIZE; ++i)
-	{
-		if (rect[i] != NULL)
-		{
-			for (int j = 0; j < BULLETSIZE; ++j)
+			for (int j = 0; j < RECTSIZE; ++j)
 			{
-				if (bullet[j] != NULL)
+				if (blue_Char[j] != NULL)
 				{
-					CollisionTest(*rect[i], *bullet[j]);
+					CollisionTest(*red_building[i], *blue_Char[j]);
+				}
+			}
+		}
+
+		if (blue_building[i] != NULL)
+		{
+			for (int j = 0; j < RECTSIZE; ++j)
+			{
+				if (red_Char[j] != NULL)
+				{
+					CollisionTest(*blue_building[i], *red_Char[j]);
 				}
 			}
 		}
 	}
 
-	for (int i = 0; i < ARROWSIZE; ++i)
+	for (int i = 0; i < RECTSIZE; ++i)	//총알 - 캐릭터
 	{
-		if (arrow[i] != NULL && building != NULL)
+		if (red_Char[i] != NULL)
 		{
-			CollisionTest(*building, *arrow[i]);
+			for (int j = 0; j < BULLETSIZE; ++j)
+			{
+				if (blue_Bullet[j] != NULL)
+				{
+					CollisionTest(*red_Char[i], *blue_Bullet[j]);
+				}
+			}
+		}
+
+		if (blue_Char[i] != NULL)
+		{
+			for (int j = 0; j < BULLETSIZE; ++j)
+			{
+				if (red_Bullet[j] != NULL)
+				{
+					CollisionTest(*blue_Char[i], *red_Bullet[j]);
+				}
+			}
 		}
 	}
 
-	for (int i = 0; i < RECTSIZE; ++i)
+	for (int i = 0; i < RECTSIZE; ++i)	//화살 - 캐릭터
 	{
-		if (rect[i] != NULL)
+		if (red_Char[i] != NULL)
 		{
 			for (int j = 0; j < ARROWSIZE; ++j)
 			{
-				if (arrow[j] != NULL)
+				if (blue_Arrow[j] != NULL)
 				{
-					CollisionTest(*rect[i], *arrow[j]);
+					CollisionTest(*red_Char[i], *blue_Arrow[j]);
+				}
+			}
+		}
+
+		if (blue_Char[i] != NULL)
+		{
+			for (int j = 0; j < ARROWSIZE; ++j)
+			{
+				if (red_Arrow[j] != NULL)
+				{
+					CollisionTest(*blue_Char[i], *red_Arrow[j]);
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < BUILDSIZE; ++i)	//화살 - 건물
+	{
+		if (red_building[i] != NULL)
+		{
+			for (int j = 0; j < ARROWSIZE; ++j)
+			{
+				if (blue_Arrow[j] != NULL)
+				{
+					CollisionTest(*red_building[i], *blue_Arrow[j]);
+				}
+			}
+		}
+
+		if (blue_building[i] != NULL)
+		{
+			for (int j = 0; j < ARROWSIZE; ++j)
+			{
+				if (red_Arrow[j] != NULL)
+				{
+					CollisionTest(*blue_building[i], *red_Arrow[j]);
 				}
 			}
 		}
 	}
 
 	// 업데이트
-	if (building != NULL)
-	{
-		building->update(nTime - pTime);
-		if (building->getLife() <= 0 || building->getLifeTime() <= 0)
-		{
-			building = NULL;
-		}
-	}
+	red_Char_spwn_t += (nTime - pTime) / 1000.0;
+	blue_Char_spwn_t += (nTime - pTime) / 1000.0;
 
-    for (int i = 0; i < RECTSIZE; ++i)
-    {
-		if (rect[i] != NULL)
+	for (int i = 0; i < BUILDSIZE; ++i)
+	{
+		if (red_building != NULL)
 		{
-			rect[i]->update(nTime - pTime);
-			if(rect[i]->getCoolTime() >= 0.5)
+			red_building[i]->update(nTime - pTime);
+			if (red_building[i]->getCoolTime() >= 10)
 			{
-				for (int j = 0; j < ARROWSIZE; ++j)
+				for (int j = 0; j < BULLETSIZE; ++j)
 				{
-					if (arrow[j] == NULL)
+					if (red_Bullet[j] == NULL)
 					{
-						float temp = getRandomNumber(1, 2);
-						if (temp == 2)
-						{
-							temp = -1;
-						}
-						float vectorX = getRandomfloat(0.0, 6000.0);
-						float vectorY = sqrt(6000.0 - vectorX) * temp;
-						temp = getRandomNumber(1, 2);
-						if (temp == 2)
-						{
-							temp = -1;
-						}
-						vectorX = sqrt(vectorX) * temp;
-						arrow[j] = new Rect(rect[i]->getX(), rect[i]->getY(), 0, 2, 0, 1, 0, 1.0, vectorX, vectorY, 0, 20, 100000, OBJECT_ARROW);
-						rect[i]->resetCoolTime();
-						arrow[j]->setMom(rect[i]);
+						vec2 vector = calculateVector(600);
+
+						red_Bullet[j] = new Rect(red_building[i]->getX(), red_building[i]->getY(), 0, 2, 1, 0, 0, 1.0, vector.x, vector.y, 0, 20, 10000000, OBJECT_BULLET, 1);
+						red_building[i]->resetCoolTime();
 						break;
 					}
 				}
 			}
-			if (rect[i]->getLife() <= 0 || rect[i]->getLifeTime() <= 0)
+			if (red_building[i]->getLife() <= 0 || red_building[i]->getLifeTime() <= 0)
 			{
-				rect[i] = NULL;
+				red_building[i] = NULL;
 			}
 		}
-    }
+		if (blue_building[i] != NULL)
+		{
+			blue_building[i]->update(nTime - pTime);
+			if (blue_building[i]->getCoolTime() >= 10)
+			{
+				for (int j = 0; j < ARROWSIZE; ++j)
+				{
+					if (blue_Bullet[j] == NULL)
+					{
+						vec2 vector = calculateVector(600);
+
+						blue_Bullet[j] = new Rect(blue_building[i]->getX(), blue_building[i]->getY(), 0, 2, 0, 0, 1, 1.0, vector.x, vector.y, 0, 20, 100000, OBJECT_BULLET, 2);
+						blue_building[i]->resetCoolTime();
+						break;
+					}
+				}
+			}
+			if (blue_building[i]->getLife() <= 0 || blue_building[i]->getLifeTime() <= 0)
+			{
+				blue_building[i] = NULL;
+			}
+		}
+	}
+
+	for (int i = 0; i < RECTSIZE; ++i)
+	{
+		if (red_Char[i] != NULL)
+		{
+			red_Char[i]->update(nTime - pTime);
+
+			if (red_Char[i]->getCoolTime() >= 3)
+			{
+				for (int j = 0; j < ARROWSIZE; ++j)
+				{
+					if (red_Arrow[j] == NULL)
+					{
+						vec2 vector = calculateVector(100);
+
+						red_Arrow[j] = new Rect(red_Char[i]->getX(), red_Char[i]->getY(), 0, 2, 0.5, 0.2, 0.7, 1.0, vector.x, vector.y, 0, 10, 100000, OBJECT_ARROW, 1);
+						red_Char[i]->resetCoolTime();
+						break;
+					}
+				}
+			}
+
+			if (red_Char[i]->getLife() <= 0 || red_Char[i]->getLifeTime() <= 0)
+			{
+				red_Char[i] = NULL;
+			}
+		}
+
+		if (red_Char_spwn_t >= 5 && red_Char[i] == NULL)
+		{
+			vec2 vector = calculateVector(300);
+
+			red_Char[i] = new Rect(getRandomNumber(1 - WIN_HALF_WIDE, WIN_HALF_WIDE - 1), getRandomNumber(1, WIN_HALF_HIGHT - 1), 0, 10, 1, 0, 0, 1.0, vector.x, vector.y, 0, 10, 10000000, OBJECT_CHARACTER, 1);
+			red_Char_spwn_t = 0;
+		}
+
+		if (blue_Char[i] != NULL)
+		{
+			blue_Char[i]->update(nTime - pTime);
+
+			if (blue_Char[i]->getCoolTime() >= 3)
+			{
+				for (int j = 0; j < ARROWSIZE; ++j)
+				{
+					if (blue_Arrow[j] == NULL)
+					{
+						vec2 vector = calculateVector(100);
+
+						blue_Arrow[j] = new Rect(blue_Char[i]->getX(), blue_Char[i]->getY(), 0, 2, 1, 1,  0, 1.0, vector.x, vector.y, 0, 10, 100000, OBJECT_ARROW, 1);
+						blue_Char[i]->resetCoolTime();
+						break;
+					}
+				}
+			}
+
+			if (blue_Char[i]->getLife() <= 0 || blue_Char[i]->getLifeTime() <= 0)
+			{
+				blue_Char[i] = NULL;
+			}
+		}
+
+		if (blue_Char_spwn_flag && blue_Char[i] == NULL)
+		{
+			vec2 vector = calculateVector(300);
+
+			blue_Char[i] = new Rect(blue_Char_spwn_posX, blue_Char_spwn_posY, 0, 10, 0, 0, 1, 1.0, vector.x, vector.y, 0, 10, 10000000, OBJECT_CHARACTER, 2);
+			blue_Char_spwn_flag = false;
+		}
+	}
 
 	for (int i = 0; i < BULLETSIZE; ++i)
 	{
-		if (bullet[i] != NULL)
+		if (red_Bullet[i] != NULL)
 		{
-			bullet[i]->update(nTime - pTime);
-			if (bullet[i]->getLife() <= 0 || bullet[i]->getLifeTime() <= 0)
+			red_Bullet[i]->update(nTime - pTime);
+			if (red_Bullet[i]->getLife() <= 0 || red_Bullet[i]->getLifeTime() <= 0)
 			{
-				bullet[i] = NULL;
+				red_Bullet[i] = NULL;
+			}
+		}
+		if (blue_Bullet[i] != NULL)
+		{
+			blue_Bullet[i]->update(nTime - pTime);
+			if (blue_Bullet[i]->getLife() <= 0 || blue_Bullet[i]->getLifeTime() <= 0)
+			{
+				blue_Bullet[i] = NULL;
 			}
 		}
 	}
 
 	for (int i = 0; i < ARROWSIZE; ++i)
 	{
-		if (arrow[i] != NULL)
+		if (red_Arrow[i] != NULL)
 		{
-			arrow[i]->update(nTime - pTime);
-			if (arrow[i]->getLife() <= 0 || arrow[i]->getLifeTime() <= 0)
+			red_Arrow[i]->update(nTime - pTime);
+			if (red_Arrow[i]->getLife() <= 0 || red_Arrow[i]->getLifeTime() <= 0)
 			{
-				arrow[i] = NULL;
+				red_Arrow[i] = NULL;
 			}
 		}
-	}
-
-	//총알 생성
-	if (1000 < nTime - spawnBT)
-	{
-		for (int i = 0; i < BULLETSIZE; ++i)
+		if (blue_Arrow[i] != NULL)
 		{
-			if (bullet[i] == NULL)
+			blue_Arrow[i]->update(nTime - pTime);
+			if (blue_Arrow[i]->getLife() <= 0 || blue_Arrow[i]->getLifeTime() <= 0)
 			{
-				float temp = getRandomNumber(1, 2);
-				if (temp == 2)
-				{
-					temp = -1;
-				}
-				float vectorX = getRandomfloat(0.0, 6000.0);
-				float vectorY = sqrt(6000.0 - vectorX) * temp;
-				temp = getRandomNumber(1, 2);
-				if (temp == 2)
-				{
-					temp = -1;
-				}
-				vectorX = sqrt(vectorX) * temp;
-				bullet[i] = new Rect(0, 0, 0, 10, 1, 0, 0, 1.0, vectorX, vectorY, 0, 20, 10, OBJECT_BULLET);
-				break;
+				blue_Arrow[i] = NULL;
 			}
 		}
-		spawnBT = nTime;
 	}
     pTime = nTime;
 }
 
 void SceneMgr::RenderObject()
 {
+	float nTime = timeGetTime();
+	count++;
+	if (nTime - temptime > 1000)
+	{
+		cout << count << endl;
+		count = 0;
+		temptime = timeGetTime();
+	}
+	for (int i = 0; i < BUILDSIZE; i++)
+	{
+		if (red_building[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawTexturedRect(
+				red_building[i]->getX(),
+				red_building[i]->getY(),
+				0,
+				red_building[i]->getSize(),
+				red_building[i]->getRed(),
+				red_building[i]->getGreen(),
+				red_building[i]->getBlue(),
+				red_building[i]->getAlhpa(),
+				buildingTex[0]
+			);
+		}
+		if (blue_building[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawTexturedRect(
+				blue_building[i]->getX(),
+				blue_building[i]->getY(),
+				0,
+				blue_building[i]->getSize(),
+				blue_building[i]->getRed(),
+				blue_building[i]->getGreen(),
+				blue_building[i]->getBlue(),
+				blue_building[i]->getAlhpa(),
+				buildingTex[1]
+			);
+		}
+	}
+
 	for (int i = 0; i < RECTSIZE; i++)
 	{
-		if (rect[i] != NULL)
+		if (red_Char[i] != NULL)
 		{
 			// Renderer Test
 			m_renderer->DrawSolidRect(
-				rect[i]->getX(),
-				rect[i]->getY(),
+				red_Char[i]->getX(),
+				red_Char[i]->getY(),
 				0,
-				rect[i]->getSize(),
-				rect[i]->getRed(),
-				rect[i]->getGreen(),
-				rect[i]->getBlue(),
-				rect[i]->getAlhpa()
+				red_Char[i]->getSize(),
+				red_Char[i]->getRed(),
+				red_Char[i]->getGreen(),
+				red_Char[i]->getBlue(),
+				red_Char[i]->getAlhpa()
+			);
+		}
+		if (blue_Char[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawSolidRect(
+				blue_Char[i]->getX(),
+				blue_Char[i]->getY(),
+				0,
+				blue_Char[i]->getSize(),
+				blue_Char[i]->getRed(),
+				blue_Char[i]->getGreen(),
+				blue_Char[i]->getBlue(),
+				blue_Char[i]->getAlhpa()
 			);
 		}
 	}
 
 	for (int i = 0; i < BULLETSIZE; i++)
 	{
-		if (bullet[i] != NULL)
+		if (red_Bullet[i] != NULL)
 		{
 			// Renderer Test
 			m_renderer->DrawSolidRect(
-				bullet[i]->getX(),
-				bullet[i]->getY(),
+				red_Bullet[i]->getX(),
+				red_Bullet[i]->getY(),
 				0,
-				bullet[i]->getSize(),
-				bullet[i]->getRed(),
-				bullet[i]->getGreen(),
-				bullet[i]->getBlue(),
-				bullet[i]->getAlhpa()
+				red_Bullet[i]->getSize(),
+				red_Bullet[i]->getRed(),
+				red_Bullet[i]->getGreen(),
+				red_Bullet[i]->getBlue(),
+				red_Bullet[i]->getAlhpa()
+			);
+		}
+		if (blue_Bullet[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawSolidRect(
+				blue_Bullet[i]->getX(),
+				blue_Bullet[i]->getY(),
+				0,
+				blue_Bullet[i]->getSize(),
+				blue_Bullet[i]->getRed(),
+				blue_Bullet[i]->getGreen(),
+				blue_Bullet[i]->getBlue(),
+				blue_Bullet[i]->getAlhpa()
 			);
 		}
 	}
 
 	for (int i = 0; i < ARROWSIZE; i++)
 	{
-		if (arrow[i] != NULL)
+		if (red_Arrow[i] != NULL)
 		{
 			// Renderer Test
 			m_renderer->DrawSolidRect(
-				arrow[i]->getX(),
-				arrow[i]->getY(),
+				red_Arrow[i]->getX(),
+				red_Arrow[i]->getY(),
 				0,
-				arrow[i]->getSize(),
-				arrow[i]->getRed(),
-				arrow[i]->getGreen(),
-				arrow[i]->getBlue(),
-				arrow[i]->getAlhpa()
+				red_Arrow[i]->getSize(),
+				red_Arrow[i]->getRed(),
+				red_Arrow[i]->getGreen(),
+				red_Arrow[i]->getBlue(),
+				red_Arrow[i]->getAlhpa()
 			);
 		}
-	}
-
-	if (building != NULL)
-	{
-		m_renderer->DrawTexturedRect(
-			building->getX(),
-			building->getY(),
-			0,
-			building->getSize(),
-			building->getRed(),
-			building->getGreen(),
-			building->getBlue(),
-			building->getAlhpa(),
-			buildingTex
-		);
+		if (blue_Arrow[i] != NULL)
+		{
+			// Renderer Test
+			m_renderer->DrawSolidRect(
+				blue_Arrow[i]->getX(),
+				blue_Arrow[i]->getY(),
+				0,
+				blue_Arrow[i]->getSize(),
+				blue_Arrow[i]->getRed(),
+				blue_Arrow[i]->getGreen(),
+				blue_Arrow[i]->getBlue(),
+				blue_Arrow[i]->getAlhpa()
+			);
+		}
 	}
 }
 
 void SceneMgr::Click(float x, float y)
 {
-	for (int i = 0; i < RECTSIZE; ++i)
+	float inputX = x - WIN_HALF_WIDE;
+	float inputY = WIN_HALF_HIGHT - y;
+	if (blue_Char_spwn_t >= 7 && inputY <= 0)
 	{
-		if (rect[i] == NULL)
-		{
-			insertRect(x - 250, 250 - y,1,1,1,300, OBJECT_CHARACTER);
-			break;
-		}
-	}
-}
-
-void SceneMgr::insertRect(float x, float y,float r, float g, float b, float speed, int type)
-{
-	for (int i = 0; i < RECTSIZE; ++i)
-	{
-		if (rect[i] == NULL)
-		{
-			float temp = getRandomNumber(1, 2);
-			if (temp == 2)
-			{
-				temp = -1;
-			}
-			float vectorX = getRandomfloat(0.0, speed);
-			float vectorY = sqrt(speed - vectorX) * temp;
-			temp = getRandomNumber(1, 2);
-			if (temp == 2)
-			{
-				temp = -1;
-			}
-			vectorX = sqrt(vectorX) * temp;
-			rect[i] = new Rect(x,  y, 0, 10, r, g, b, 1.0, vectorX, vectorY, 0, 40, 10000000, type);
-			break;
-		}
+		blue_Char_spwn_posX = inputX;
+		blue_Char_spwn_posY = inputY;
+		blue_Char_spwn_t = 0;
+		blue_Char_spwn_flag = true;
 	}
 }
 
@@ -357,28 +526,9 @@ void SceneMgr::CollisionTest(Rect& a, Rect& b)
 
 	if (BoxBoxCol(aMinX, aMinY, aMaxX, aMaxY, bMinX, bMinY, bMaxX, bMaxY))
 	{
-		if (a.getType() == OBJECT_BUILDING && b.getType() == OBJECT_CHARACTER)
-		{
-			a.setLife(b.getLife());
-			b.setLife(b.getLife());
-			cout << a.getLife() << endl;
-		}
-		else if (a.getType() == OBJECT_CHARACTER && b.getType() == OBJECT_BULLET)
-		{
-			a.setLife(b.getLife());
-			b.setLife(b.getLife());
-		}
-		else if (a.getType() == OBJECT_BUILDING && b.getType() == OBJECT_ARROW)
-		{
-			a.setLife(b.getLife());
-			b.setLife(b.getLife());
-		}
-		else if (a.getType() == OBJECT_CHARACTER && b.getType() == OBJECT_ARROW)
-		{
-			if (b.getMom() == &a) { return; }
-			a.setLife(b.getLife());
-			b.setLife(b.getLife());
-		}
+		a.setLife(b.getLife());
+		b.setLife(b.getLife());
+		cout << a.getType() << " - " << b.getType() << endl;
 	}
 }
 
@@ -397,10 +547,17 @@ bool SceneMgr::BoxBoxCol(float aMinX, float aMinY, float aMaxX, float aMaxY, flo
 	return true;
 }
 
-float SceneMgr::distCalculate(Rect& a, Rect& b)
+vec2 SceneMgr::calculateVector(float speed)
 {
-    float distX = a.getX() - b.getX();
-    float distY = a.getY() - b.getY();
-    
-    return sqrtf(distX) + sqrtf(distY);
+	vec2 vector;
+
+	vector.x = getRandomfloat(-10.0f, 10.0f);
+	vector.y = getRandomfloat(-10.0f, 10.0f);
+
+	float vectorSpeed = speed / sqrt(vector.x * vector.x + vector.y * vector.y);	// 속도 / 벡터 크기(노멀라이즈 * 속도)
+
+	vector.x *= vectorSpeed;
+	vector.y *= vectorSpeed;
+
+	return vector;
 }

@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "Rect.h"
 
-#define WIDTH 250
-#define HEIGHT 250
 
-Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType)
+Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType, int t)
 {
     x = px;
     y = py;
@@ -21,7 +19,7 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
     lifeTime = lifeT;
 	type = inputType;
 	coolTime = 0;
-	mom = NULL;
+	team = t;
 }
 
 Rect::Rect()
@@ -64,7 +62,7 @@ void Rect::update(float time)
 
 bool Rect::bounceH(float time)
 {
-    if (x > WIDTH || x < -WIDTH)
+    if (x > WIN_HALF_WIDE || x < -WIN_HALF_WIDE)
     {
         vectorX = -vectorX;
 		x += vectorX * time;
@@ -75,7 +73,7 @@ bool Rect::bounceH(float time)
 
 bool Rect::bounceV(float time)
 {
-    if (y > HEIGHT || y < -HEIGHT)
+    if (y > WIN_HALF_HIGHT || y < -WIN_HALF_HIGHT)
     {
         vectorY = -vectorY;
 		y += vectorY * time;

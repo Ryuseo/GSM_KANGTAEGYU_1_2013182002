@@ -23,15 +23,15 @@ private:
     int     life;
     float   lifeTime;
 	int		type;
-	Rect*	mom;
 	float	coolTime;
+	int		team;
 
     bool bounceH(float time);
     bool bounceV(float time);
 
 public:
 
-    Rect(float x, float y, float z, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType);
+    Rect(float x, float y, float z, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType, int t);
     Rect();
     ~Rect();
     float   getX			()                          { return x; }
@@ -49,10 +49,8 @@ public:
     int     getLife			()                          { return life; }
     float   getLifeTime		()                          { return lifeTime; }
 	float	getCoolTime		()							{ return coolTime; }
-	Rect*	getMom			()							{ return mom; }
     void    setLife			(int Damege)                { life -= Damege; }
 	void	resetCoolTime	()							{ coolTime = 0; }
-	void	setMom			(Rect* m)					{ mom = m; }
     void    update			(float time);
     void    changeColor		(float r, float g, float b);
 };

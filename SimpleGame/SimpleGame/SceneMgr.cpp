@@ -6,13 +6,6 @@
 
 using namespace std;
 
-enum OBJECT_TYPE
-{
-	OBJECT_BUILDING,
-	OBJECT_CHARACTER,
-	OBJECT_BULLET,
-	OBJECT_ARROW,
-};
 
 SceneMgr::SceneMgr(int width, int height)
 {
@@ -247,7 +240,7 @@ void SceneMgr::Update()
 		{
 			vec2 vector = calculateVector(300);
 
-			red_Char[i] = new Rect(getRandomNumber(1 - WIN_HALF_WIDE, WIN_HALF_WIDE - 1), getRandomNumber(1, WIN_HALF_HIGHT - 1), 0, 10, 1, 0, 0, 1.0, vector.x, vector.y, 0, 10, 10000000, OBJECT_CHARACTER, 1);
+			red_Char[i] = new Rect(getRandomNumber(1 - WIN_HALF_WIDE, WIN_HALF_WIDE - 1), getRandomNumber(1, WIN_HALF_HIGHT - 1), 0, 10, 1, 0, 0, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 1);
 			red_Char_spwn_t = 0;
 		}
 
@@ -280,7 +273,7 @@ void SceneMgr::Update()
 		{
 			vec2 vector = calculateVector(300);
 
-			blue_Char[i] = new Rect(blue_Char_spwn_posX, blue_Char_spwn_posY, 0, 10, 0, 0, 1, 1.0, vector.x, vector.y, 0, 10, 10000000, OBJECT_CHARACTER, 2);
+			blue_Char[i] = new Rect(blue_Char_spwn_posX, blue_Char_spwn_posY, 0, 10, 0, 0, 1, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 2);
 			blue_Char_spwn_flag = false;
 		}
 	}
@@ -351,7 +344,21 @@ void SceneMgr::RenderObject()
 				red_building[i]->getGreen(),
 				red_building[i]->getBlue(),
 				red_building[i]->getAlhpa(),
-				buildingTex[0]
+				buildingTex[0],
+				0.1
+			);
+			m_renderer->DrawSolidRectGauge(
+				red_building[i]->getX(),
+				red_building[i]->getY() + red_building[i]->getSize() / 2 + 3,
+				0,
+				red_building[i]->getSize(),
+				3,
+				1,
+				0,
+				0,
+				red_building[i]->getAlhpa(),
+				red_building[i]->getLife() / 500.0f,
+				0.1
 			);
 		}
 		if (blue_building[i] != NULL)
@@ -366,7 +373,21 @@ void SceneMgr::RenderObject()
 				blue_building[i]->getGreen(),
 				blue_building[i]->getBlue(),
 				blue_building[i]->getAlhpa(),
-				buildingTex[1]
+				buildingTex[1],
+				0.1
+			);
+			m_renderer->DrawSolidRectGauge(
+				blue_building[i]->getX(),
+				blue_building[i]->getY() + blue_building[i]->getSize() / 2 + 3,
+				0,
+				blue_building[i]->getSize(),
+				3,
+				0,
+				0,
+				1,
+				blue_building[i]->getAlhpa(),
+				blue_building[i]->getLife() / 500.0f,
+				0.1
 			);
 		}
 	}
@@ -384,7 +405,21 @@ void SceneMgr::RenderObject()
 				red_Char[i]->getRed(),
 				red_Char[i]->getGreen(),
 				red_Char[i]->getBlue(),
-				red_Char[i]->getAlhpa()
+				red_Char[i]->getAlhpa(),
+				0.2
+			);
+			m_renderer->DrawSolidRectGauge(
+				red_Char[i]->getX(),
+				red_Char[i]->getY() + red_Char[i]->getSize() / 2 + 3,
+				0,
+				red_Char[i]->getSize(),
+				3,
+				1,
+				0,
+				0,
+				red_Char[i]->getAlhpa(),
+				red_Char[i]->getLife() / 100,
+				0.2
 			);
 		}
 		if (blue_Char[i] != NULL)
@@ -398,7 +433,21 @@ void SceneMgr::RenderObject()
 				blue_Char[i]->getRed(),
 				blue_Char[i]->getGreen(),
 				blue_Char[i]->getBlue(),
-				blue_Char[i]->getAlhpa()
+				blue_Char[i]->getAlhpa(),
+				0.2
+			);
+			m_renderer->DrawSolidRectGauge(
+				blue_Char[i]->getX(),
+				blue_Char[i]->getY() + blue_Char[i]->getSize()/2 + 3,
+				0,
+				blue_Char[i]->getSize(),
+				3,
+				0,
+				0,
+				1,
+				blue_Char[i]->getAlhpa(),
+				blue_Char[i]->getLife() / 100,
+				0.2
 			);
 		}
 	}
@@ -416,7 +465,8 @@ void SceneMgr::RenderObject()
 				red_Bullet[i]->getRed(),
 				red_Bullet[i]->getGreen(),
 				red_Bullet[i]->getBlue(),
-				red_Bullet[i]->getAlhpa()
+				red_Bullet[i]->getAlhpa(),
+				0.3
 			);
 		}
 		if (blue_Bullet[i] != NULL)
@@ -430,7 +480,8 @@ void SceneMgr::RenderObject()
 				blue_Bullet[i]->getRed(),
 				blue_Bullet[i]->getGreen(),
 				blue_Bullet[i]->getBlue(),
-				blue_Bullet[i]->getAlhpa()
+				blue_Bullet[i]->getAlhpa(),
+				0.3
 			);
 		}
 	}
@@ -448,7 +499,8 @@ void SceneMgr::RenderObject()
 				red_Arrow[i]->getRed(),
 				red_Arrow[i]->getGreen(),
 				red_Arrow[i]->getBlue(),
-				red_Arrow[i]->getAlhpa()
+				red_Arrow[i]->getAlhpa(),
+				0.3
 			);
 		}
 		if (blue_Arrow[i] != NULL)
@@ -462,7 +514,8 @@ void SceneMgr::RenderObject()
 				blue_Arrow[i]->getRed(),
 				blue_Arrow[i]->getGreen(),
 				blue_Arrow[i]->getBlue(),
-				blue_Arrow[i]->getAlhpa()
+				blue_Arrow[i]->getAlhpa(),
+				0.3
 			);
 		}
 	}

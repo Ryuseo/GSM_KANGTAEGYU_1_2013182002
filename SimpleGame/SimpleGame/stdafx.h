@@ -6,6 +6,15 @@
 #include <tchar.h>
 #include <Windows.h>
 
+enum OBJECT_TYPE
+{
+	OBJECT_BUILDING,
+	OBJECT_CHARACTER,
+	OBJECT_BULLET,
+	OBJECT_ARROW,
+};
+
+
 #define RECTSIZE		10
 #define BULLETSIZE		100
 #define ARROWSIZE		100

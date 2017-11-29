@@ -64,8 +64,16 @@ bool Rect::bounceH(float time)
 {
     if (x > WIN_HALF_WIDE || x < -WIN_HALF_WIDE)
     {
-        vectorX = -vectorX;
-		x += vectorX * time;
+		if (type == OBJECT_BULLET || type == OBJECT_ARROW)
+		{
+			life = -1;
+			lifeTime = -1;
+		}
+		else
+		{
+			vectorX = -vectorX;
+			x += vectorX * time;
+		}
         return true;
     }
     return false;
@@ -75,8 +83,16 @@ bool Rect::bounceV(float time)
 {
     if (y > WIN_HALF_HIGHT || y < -WIN_HALF_HIGHT)
     {
-        vectorY = -vectorY;
-		y += vectorY * time;
+		if (type == OBJECT_BULLET || type == OBJECT_ARROW)
+		{
+			life = -1;
+			lifeTime = -1;
+		}
+		else
+		{
+			vectorY = -vectorY;
+			y += vectorY * time;
+		}
         return true;
     }
     return false;

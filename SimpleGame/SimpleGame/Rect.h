@@ -25,7 +25,10 @@ private:
 	int		type;
 	float	coolTime;
 	int		team;
-
+	int		anisqs;
+	float	ani_CoolTime = 0.5;
+	float	countTime;
+	Rect		*particleArr[100];
     bool bounceH(float time);
     bool bounceV(float time);
 
@@ -49,6 +52,7 @@ public:
     int     getLife			()                          { return life; }
     float   getLifeTime		()                          { return lifeTime; }
 	float	getCoolTime		()							{ return coolTime; }
+	int		getAniSqs		()							{ return anisqs; }
     void    setLife			(int Damege)                { life -= Damege; }
 	void	resetCoolTime	()							{ coolTime = 0; }
     void    update			(float time);

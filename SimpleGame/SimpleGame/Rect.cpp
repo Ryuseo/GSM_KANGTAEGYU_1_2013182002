@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Rect.h"
+#include <iostream>
 
+using namespace std;
 
 Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, float a, float vx, float vy, float vz, int lifeNum, float lifeT, int inputType, int t)
 {
@@ -20,6 +22,9 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
 	type = inputType;
 	coolTime = 0;
 	team = t;
+	ani_CoolTime = 0.3;
+	anisqs;
+	countTime = 0;
 }
 
 Rect::Rect()
@@ -40,7 +45,17 @@ void Rect::update(float time)
     //z += vectorZ * elapsedTime;
     lifeTime -= elapsedTime;
 	coolTime += elapsedTime;
-
+	ani_CoolTime -= elapsedTime;
+	countTime += time;
+	if (ani_CoolTime < 0)
+	{
+		ani_CoolTime = 0.3;
+		anisqs++;
+		if (anisqs > 2)
+		{
+			anisqs = 0;
+		}
+	}
     if (bounceH(elapsedTime))
     {
         //changeColor(1,0,0);

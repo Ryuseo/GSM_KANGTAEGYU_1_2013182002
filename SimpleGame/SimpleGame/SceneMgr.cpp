@@ -19,8 +19,8 @@ SceneMgr::SceneMgr(int width, int height)
 
 	for (int i = 0; i < BUILDSIZE; ++i)
 	{
-		red_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, 300, 0, 100, 1, 0, 0, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 1);
-		blue_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, -300, 0, 100, 0, 0, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 2);
+		red_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, 300, 0, 100, 1, 1, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 1);
+		blue_building[i] = new Rect(125 * (i + 1) - WIN_HALF_WIDE, -300, 0, 100, 1, 1, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_BUILDING, 2);
 	}
 
 	for (int i = 0; i < RECTSIZE; ++i )
@@ -41,7 +41,10 @@ SceneMgr::SceneMgr(int width, int height)
 
 	buildingTex[0] = m_renderer->CreatePngTexture("./Resouce/redBuildingTex.png");
 	buildingTex[1] = m_renderer->CreatePngTexture("./Resouce/blueBuildingTex.png");
-
+	backGround = m_renderer->CreatePngTexture("./Resouce/backGround.png");
+	char_ani = m_renderer->CreatePngTexture("./Resouce/soldier.png");
+	partice_tex = m_renderer->CreatePngTexture("./Resouce/particle.png");
+	
     pTime = timeGetTime();
 }
 
@@ -240,7 +243,7 @@ void SceneMgr::Update()
 		{
 			vec2 vector = calculateVector(300);
 
-			red_Char[i] = new Rect(getRandomNumber(1 - WIN_HALF_WIDE, WIN_HALF_WIDE - 1), getRandomNumber(1, WIN_HALF_HIGHT - 1), 0, 10, 1, 0, 0, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 1);
+			red_Char[i] = new Rect(getRandomNumber(1 - WIN_HALF_WIDE, WIN_HALF_WIDE - 1), getRandomNumber(1, WIN_HALF_HIGHT - 1), 0, 50, 1, 0, 0, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 1);
 			red_Char_spwn_t = 0;
 		}
 
@@ -273,7 +276,7 @@ void SceneMgr::Update()
 		{
 			vec2 vector = calculateVector(300);
 
-			blue_Char[i] = new Rect(blue_Char_spwn_posX, blue_Char_spwn_posY, 0, 10, 0, 0, 1, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 2);
+			blue_Char[i] = new Rect(blue_Char_spwn_posX, blue_Char_spwn_posY, 0, 50, 0, 0, 1, 1.0, vector.x, vector.y, 0, 100, 10000000, OBJECT_CHARACTER, 2);
 			blue_Char_spwn_flag = false;
 		}
 	}
@@ -283,6 +286,17 @@ void SceneMgr::Update()
 		if (red_Bullet[i] != NULL)
 		{
 			red_Bullet[i]->update(nTime - pTime);
+			
+			if (red_Bullet[i]->getCoolTime() < 0)
+			{
+				for (int i = 0; i < 1000; ++i)
+				{
+					if (particleArr[i] != NULL)
+					{
+						particleArr[i] = new Rect(red_Bullet[i]->getX(), red_Bullet[i]->getY(), 0, 10, 1, 1, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_PARTICLE, 1);
+					}
+				}
+			}
 			if (red_Bullet[i]->getLife() <= 0 || red_Bullet[i]->getLifeTime() <= 0)
 			{
 				red_Bullet[i] = NULL;
@@ -291,6 +305,16 @@ void SceneMgr::Update()
 		if (blue_Bullet[i] != NULL)
 		{
 			blue_Bullet[i]->update(nTime - pTime);
+			if (blue_Bullet[i]->getCoolTime() < 0)
+			{
+				for (int i = 0; i < 1000; ++i)
+				{
+					if (particleArr[i] != NULL)
+					{
+						particleArr[i] = new Rect(blue_Bullet[i]->getX(), blue_Bullet[i]->getY(), 0, 10, 1, 1, 1, 1.0, 0, 0, 0, 500, 100000000, OBJECT_PARTICLE, 2);
+					}
+				}
+			}
 			if (blue_Bullet[i]->getLife() <= 0 || blue_Bullet[i]->getLifeTime() <= 0)
 			{
 				blue_Bullet[i] = NULL;
@@ -330,6 +354,20 @@ void SceneMgr::RenderObject()
 		count = 0;
 		temptime = timeGetTime();
 	}
+
+	m_renderer->DrawTexturedRect(
+		0,
+		0,
+		0,
+		500,
+		1,
+		1,
+		1,
+		1,
+		backGround,
+		0.99
+	);
+
 	for (int i = 0; i < BUILDSIZE; i++)
 	{
 		if (red_building[i] != NULL)
@@ -397,7 +435,7 @@ void SceneMgr::RenderObject()
 		if (red_Char[i] != NULL)
 		{
 			// Renderer Test
-			m_renderer->DrawSolidRect(
+			m_renderer->DrawTexturedRectSeq(
 				red_Char[i]->getX(),
 				red_Char[i]->getY(),
 				0,
@@ -406,6 +444,11 @@ void SceneMgr::RenderObject()
 				red_Char[i]->getGreen(),
 				red_Char[i]->getBlue(),
 				red_Char[i]->getAlhpa(),
+				char_ani,
+				red_Char[i]->getAniSqs(),
+				0,
+				12,
+				8,
 				0.2
 			);
 			m_renderer->DrawSolidRectGauge(
@@ -425,7 +468,7 @@ void SceneMgr::RenderObject()
 		if (blue_Char[i] != NULL)
 		{
 			// Renderer Test
-			m_renderer->DrawSolidRect(
+			m_renderer->DrawTexturedRectSeq(
 				blue_Char[i]->getX(),
 				blue_Char[i]->getY(),
 				0,
@@ -434,6 +477,11 @@ void SceneMgr::RenderObject()
 				blue_Char[i]->getGreen(),
 				blue_Char[i]->getBlue(),
 				blue_Char[i]->getAlhpa(),
+				char_ani,
+				blue_Char[i]->getAniSqs(),
+				4,
+				12,
+				8,
 				0.2
 			);
 			m_renderer->DrawSolidRectGauge(
@@ -518,6 +566,11 @@ void SceneMgr::RenderObject()
 				0.3
 			);
 		}
+	}
+
+	for (int i = 0; i < 1000; ++i)
+	{
+		
 	}
 }
 

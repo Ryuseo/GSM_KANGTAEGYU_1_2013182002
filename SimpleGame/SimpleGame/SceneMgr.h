@@ -20,8 +20,12 @@ private:
 	Rect		*blue_Bullet[BULLETSIZE];
 	Rect		*blue_Arrow[ARROWSIZE];
 	Rect		*blue_building[BUILDSIZE];
+	Rect		*particleArr[1000];
 	Renderer	*m_renderer;
 	GLuint		buildingTex[2];
+	GLuint		backGround;
+	GLuint		char_ani;
+	GLuint		partice_tex;
 
 	int count = 0;
 	float	temptime;
@@ -31,6 +35,7 @@ private:
 	bool	blue_Char_spwn_flag = false;
 	int		blue_Char_spwn_posX;
 	int		blue_Char_spwn_posY;
+	long	particleTime;
 
     int     getRandomNumber(int min, int max);
     float   getRandomfloat(float min, float max);

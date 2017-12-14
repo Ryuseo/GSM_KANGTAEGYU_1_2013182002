@@ -10,6 +10,8 @@ using namespace std;
 SceneMgr::SceneMgr(int width, int height)
 {
 	m_renderer = new Renderer(width, height);
+	sound = new Sound();
+
 	temptime = timeGetTime();
 
 	if (!m_renderer->IsInitialized())
@@ -45,6 +47,11 @@ SceneMgr::SceneMgr(int width, int height)
 	char_ani = m_renderer->CreatePngTexture("./Resouce/soldier.png");
 	partice_tex = m_renderer->CreatePngTexture("./Resouce/particle.png");
 	
+	soundBGB = sound->CreateSound("./Dependencies/SoundSamples/MF-W-90.XM");
+
+	sound->PlaySound(soundBGB, true, 0.2f);
+
+
     pTime = timeGetTime();
 }
 
@@ -54,12 +61,15 @@ SceneMgr::~SceneMgr()
 }
 
 float spawnBT = 0;
+float climateTime = 0;
 
 void SceneMgr::Update()
 {
     float nTime =  timeGetTime();
+	climateTime += (nTime - pTime) / 1000.0;
 
 	// 충돌
+	// 건물 - 캐릭터
 	for (int i = 0; i < BUILDSIZE; ++i)	//캐릭터 - 건물 
 	{
 		if (red_building[i] != NULL)
@@ -84,7 +94,7 @@ void SceneMgr::Update()
 			}
 		}
 	}
-
+	// 캐릭터 - 총알
 	for (int i = 0; i < RECTSIZE; ++i)	//총알 - 캐릭터
 	{
 		if (red_Char[i] != NULL)
@@ -109,7 +119,7 @@ void SceneMgr::Update()
 			}
 		}
 	}
-
+	// 화살 - 캐릭터
 	for (int i = 0; i < RECTSIZE; ++i)	//화살 - 캐릭터
 	{
 		if (red_Char[i] != NULL)
@@ -134,7 +144,7 @@ void SceneMgr::Update()
 			}
 		}
 	}
-
+	// 총알 - 건물
 	for (int i = 0; i < BUILDSIZE; ++i)	//화살 - 건물
 	{
 		if (red_building[i] != NULL)
@@ -164,9 +174,10 @@ void SceneMgr::Update()
 	red_Char_spwn_t += (nTime - pTime) / 1000.0;
 	blue_Char_spwn_t += (nTime - pTime) / 1000.0;
 
+	//건물
 	for (int i = 0; i < BUILDSIZE; ++i)
 	{
-		if (red_building != NULL)
+		if (red_building[i] != NULL)
 		{
 			red_building[i]->update(nTime - pTime);
 			if (red_building[i]->getCoolTime() >= 10)
@@ -175,9 +186,9 @@ void SceneMgr::Update()
 				{
 					if (red_Bullet[j] == NULL)
 					{
-						vec2 vector = calculateVector(600);
+						vec2 vector = calculateVector(100);
 
-						red_Bullet[j] = new Rect(red_building[i]->getX(), red_building[i]->getY(), 0, 2, 1, 0, 0, 1.0, vector.x, vector.y, 0, 20, 10000000, OBJECT_BULLET, 1);
+						red_Bullet[j] = new Rect(red_building[i]->getX(), red_building[i]->getY(), 0, 5, 1, 0, 0, 1.0, vector.x, vector.y, 0, 20, 10000000, OBJECT_BULLET, 1);
 						red_building[i]->resetCoolTime();
 						break;
 					}
@@ -193,13 +204,13 @@ void SceneMgr::Update()
 			blue_building[i]->update(nTime - pTime);
 			if (blue_building[i]->getCoolTime() >= 10)
 			{
-				for (int j = 0; j < ARROWSIZE; ++j)
+				for (int j = 0; j < BULLETSIZE; ++j)
 				{
 					if (blue_Bullet[j] == NULL)
 					{
-						vec2 vector = calculateVector(600);
+						vec2 vector = calculateVector(100);
 
-						blue_Bullet[j] = new Rect(blue_building[i]->getX(), blue_building[i]->getY(), 0, 2, 0, 0, 1, 1.0, vector.x, vector.y, 0, 20, 100000, OBJECT_BULLET, 2);
+						blue_Bullet[j] = new Rect(blue_building[i]->getX(), blue_building[i]->getY(), 0, 5, 0, 0, 1, 1.0, vector.x, vector.y, 0, 20, 100000, OBJECT_BULLET, 2);
 						blue_building[i]->resetCoolTime();
 						break;
 					}
@@ -211,7 +222,7 @@ void SceneMgr::Update()
 			}
 		}
 	}
-
+	//캐릭터
 	for (int i = 0; i < RECTSIZE; ++i)
 	{
 		if (red_Char[i] != NULL)
@@ -280,14 +291,14 @@ void SceneMgr::Update()
 			blue_Char_spwn_flag = false;
 		}
 	}
-
+	// 총알
 	for (int i = 0; i < BULLETSIZE; ++i)
 	{
 		if (red_Bullet[i] != NULL)
 		{
 			red_Bullet[i]->update(nTime - pTime);
 			
-			if (red_Bullet[i]->getCoolTime() < 0)
+			if (red_Bullet[i]->getCoolTime() > 0.1)
 			{
 				for (int i = 0; i < 1000; ++i)
 				{
@@ -321,7 +332,7 @@ void SceneMgr::Update()
 			}
 		}
 	}
-
+	// 화살
 	for (int i = 0; i < ARROWSIZE; ++i)
 	{
 		if (red_Arrow[i] != NULL)
@@ -348,13 +359,15 @@ void SceneMgr::RenderObject()
 {
 	float nTime = timeGetTime();
 	count++;
-	if (nTime - temptime > 1000)
-	{
-		cout << count << endl;
-		count = 0;
-		temptime = timeGetTime();
-	}
+	// FPS 출력
+	//if (nTime - temptime > 1000)
+	//{
+	//	cout << count << endl;
+	//	count = 0;
+	//	temptime = timeGetTime();
+	//}
 
+	// 배경
 	m_renderer->DrawTexturedRect(
 		0,
 		0,
@@ -368,11 +381,14 @@ void SceneMgr::RenderObject()
 		0.99
 	);
 
+	// 건물
 	for (int i = 0; i < BUILDSIZE; i++)
 	{
 		if (red_building[i] != NULL)
 		{
-			// Renderer Test
+			string tempstr = to_string(red_building[i]->getLife());
+			const char* lifeTest = tempstr.c_str();
+			// Renderer
 			m_renderer->DrawTexturedRect(
 				red_building[i]->getX(),
 				red_building[i]->getY(),
@@ -385,6 +401,7 @@ void SceneMgr::RenderObject()
 				buildingTex[0],
 				0.1
 			);
+			m_renderer->DrawText(red_building[i]->getX(), red_building[i]->getY() + red_building[i]->getSize() / 2, GLUT_BITMAP_9_BY_15, 1, 0, 0, (char*)lifeTest);
 			m_renderer->DrawSolidRectGauge(
 				red_building[i]->getX(),
 				red_building[i]->getY() + red_building[i]->getSize() / 2 + 3,
@@ -398,6 +415,7 @@ void SceneMgr::RenderObject()
 				red_building[i]->getLife() / 500.0f,
 				0.1
 			);
+			
 		}
 		if (blue_building[i] != NULL)
 		{
@@ -427,9 +445,12 @@ void SceneMgr::RenderObject()
 				blue_building[i]->getLife() / 500.0f,
 				0.1
 			);
+			string tempstr = to_string(blue_building[i]->getLife());
+			const char* lifeTest = tempstr.c_str();
+			m_renderer->DrawText(blue_building[i]->getX(), blue_building[i]->getY() + blue_building[i]->getSize() / 2, GLUT_BITMAP_9_BY_15, 0, 0, 1, (char*)lifeTest);
 		}
 	}
-
+	// 캐릭터
 	for (int i = 0; i < RECTSIZE; i++)
 	{
 		if (red_Char[i] != NULL)
@@ -499,7 +520,7 @@ void SceneMgr::RenderObject()
 			);
 		}
 	}
-
+	// 총알
 	for (int i = 0; i < BULLETSIZE; i++)
 	{
 		if (red_Bullet[i] != NULL)
@@ -533,7 +554,7 @@ void SceneMgr::RenderObject()
 			);
 		}
 	}
-
+	// 화살
 	for (int i = 0; i < ARROWSIZE; i++)
 	{
 		if (red_Arrow[i] != NULL)
@@ -567,11 +588,48 @@ void SceneMgr::RenderObject()
 			);
 		}
 	}
-
-	for (int i = 0; i < 1000; ++i)
+	// 파티클
+	for (int i = 0; i < BULLETSIZE; ++i)	// 파티클
 	{
-		
+		if (red_Bullet[i] != NULL)
+		{
+			vec2 tempVec2 = calculatePacticleVector(red_Bullet[i]->getVectorX(), red_Bullet[i]->getVectorY());
+			m_renderer->DrawParticle(
+				red_Bullet[i]->getX(),
+				red_Bullet[i]->getY(),
+				red_Bullet[i]->getZ(),
+				20,
+				1,
+				1,
+				1,
+				1,
+				tempVec2.x,
+				tempVec2.y,
+				partice_tex,
+				red_Bullet[i]->getCountTime(),
+				0.8);
+		}
+		if (blue_Bullet[i] != NULL)
+		{
+			vec2 tempVec2 = calculatePacticleVector(blue_Bullet[i]->getVectorX(), blue_Bullet[i]->getVectorY());
+			m_renderer->DrawParticle(
+				blue_Bullet[i]->getX(),
+				blue_Bullet[i]->getY(),
+				blue_Bullet[i]->getZ(),
+				20,
+				1,
+				1,
+				1,
+				1,
+				tempVec2.x,
+				tempVec2.y,
+				partice_tex,
+				blue_Bullet[i]->getCountTime(),
+				0.8);
+		}
 	}
+
+	m_renderer->DrawParticleClimate(0, 0, 0, 1, 1, 1, 1, 1, -0.1, -0.1, partice_tex, climateTime, 0.8);
 }
 
 void SceneMgr::Click(float x, float y)
@@ -661,6 +719,21 @@ vec2 SceneMgr::calculateVector(float speed)
 	vector.y = getRandomfloat(-10.0f, 10.0f);
 
 	float vectorSpeed = speed / sqrt(vector.x * vector.x + vector.y * vector.y);	// 속도 / 벡터 크기(노멀라이즈 * 속도)
+
+	vector.x *= vectorSpeed;
+	vector.y *= vectorSpeed;
+
+	return vector;
+}
+
+vec2 SceneMgr::calculatePacticleVector(float x,float y)
+{
+	vec2 vector;
+
+	vector.x = -x;
+	vector.y = -y;
+
+	float vectorSpeed = 1 / sqrt(vector.x * vector.x + vector.y * vector.y);	// 속도 / 벡터 크기(노멀라이즈 * 속도)
 
 	vector.x *= vectorSpeed;
 	vector.y *= vectorSpeed;

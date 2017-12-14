@@ -6,12 +6,15 @@
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
+#include "Sound.h"
 #include "Renderer.h"
 #include "Rect.h"
 
 class SceneMgr
 {
 private:
+	Renderer	*m_renderer;
+	Sound*		sound;
     Rect		*red_Char[RECTSIZE];
 	Rect		*red_Bullet[BULLETSIZE];
 	Rect		*red_Arrow[ARROWSIZE];
@@ -21,11 +24,11 @@ private:
 	Rect		*blue_Arrow[ARROWSIZE];
 	Rect		*blue_building[BUILDSIZE];
 	Rect		*particleArr[1000];
-	Renderer	*m_renderer;
 	GLuint		buildingTex[2];
 	GLuint		backGround;
 	GLuint		char_ani;
 	GLuint		partice_tex;
+	GLuint		soundBGB;
 
 	int count = 0;
 	float	temptime;
@@ -49,5 +52,6 @@ public:
     void    CollisionTest(Rect& a, Rect& b);
 	bool	BoxBoxCol(float aMinX, float aMinY, float aMaxX, float aMaxY, float bMinX, float bMinY, float bMaxX, float bMaxY);
 	vec2	calculateVector(float speed);
+	vec2	calculatePacticleVector(float x, float y);
 };
 

@@ -53,8 +53,11 @@ public:
     float   getLifeTime		()                          { return lifeTime; }
 	float	getCoolTime		()							{ return coolTime; }
 	int		getAniSqs		()							{ return anisqs; }
+	float	getCountTime	()							{ return countTime; }
+
     void    setLife			(int Damege)                { life -= Damege; }
 	void	resetCoolTime	()							{ coolTime = 0; }
+	void	setCountTime	(int time)					{ countTime = time; }
+
     void    update			(float time);
-    void    changeColor		(float r, float g, float b);
 };

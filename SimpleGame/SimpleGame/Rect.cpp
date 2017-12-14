@@ -23,7 +23,7 @@ Rect::Rect(float px, float py, float pz, float s, float r, float g, float b, flo
 	coolTime = 0;
 	team = t;
 	ani_CoolTime = 0.3;
-	anisqs;
+	anisqs = 0;
 	countTime = 0;
 }
 
@@ -46,7 +46,7 @@ void Rect::update(float time)
     lifeTime -= elapsedTime;
 	coolTime += elapsedTime;
 	ani_CoolTime -= elapsedTime;
-	countTime += time;
+	countTime += elapsedTime;
 	if (ani_CoolTime < 0)
 	{
 		ani_CoolTime = 0.3;
@@ -111,11 +111,4 @@ bool Rect::bounceV(float time)
         return true;
     }
     return false;
-}
-
-void Rect::changeColor(float r, float g, float b)
-{
-    red = r;
-    green = g;
-    blue = b;
 }
